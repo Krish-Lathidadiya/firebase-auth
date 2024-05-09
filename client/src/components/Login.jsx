@@ -7,6 +7,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
+  OAuthProvider,
 } from "firebase/auth";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -105,6 +106,27 @@ function Login() {
     }
   };
 
+  const loginWithMicrosoft = async () => {
+
+    const provider = new OAuthProvider("microsoft.com");
+    try {
+      // provider.addScope("profile");
+      // provider.addScope("email");
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // This gives you a OAuth Access Token for the provider.
+      const credential = provider.credentialFromResult(auth, result);
+      const token = credential.accessToken;
+
+      console.log("Microsoft sign-in successful:", user);
+      navigate("/");
+    } catch (error) {
+      console.error("Microsoft sign-in error:", error.code, error.message);
+      toast.error("Microsoft sign-in error. Please try again later.");
+    }
+  };
+
   const handlePhoneLogin = () => {
     return navigate("/phone-login");
   };
@@ -159,7 +181,7 @@ function Login() {
         <div className="mt-4">
           <button
             onClick={loginWithGoogle}
-            className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700"
+            className="w-full py-2 px-4 bg-red-800 text-white rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700"
           >
             Login With Google
           </button>
@@ -168,6 +190,12 @@ function Login() {
             className="w-full py-2 px-4 mt-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 focus:outline-none focus:bg-gray-900"
           >
             Login With GitHub
+          </button>
+          <button
+            onClick={loginWithMicrosoft}
+            className="w-full py-2 px-4 mt-2 bg bg-indigo-800 text-white rounded-md hover:bg-indigo-900 focus:outline-none focus:bg-indigo-900"
+          >
+            Login With Microosoft
           </button>
         </div>
         <button
